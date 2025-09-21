@@ -2,8 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/chat_model.dart';
-import '../models/chat_message_model.dart';
+import '../models/chat_message_model.dart' hide MessageType, MessageStatus;
 import '../core/services/local_storage.dart';
+
+// Use MessageType and MessageStatus from chat_message_model
+import '../models/chat_message_model.dart' show MessageType, MessageStatus;
 
 class ChatProvider extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

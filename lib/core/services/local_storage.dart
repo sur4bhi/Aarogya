@@ -81,6 +81,11 @@ class LocalStorageService {
     return _prefs.getStringList(key);
   }
   
+  // Alias method for convenience
+  static Future<void> saveStringList(String key, List<String> value) async {
+    await setStringList(key, value);
+  }
+  
   // Remove key
   static Future<void> remove(String key) async {
     await _prefs.remove(key);

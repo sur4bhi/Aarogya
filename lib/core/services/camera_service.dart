@@ -40,4 +40,41 @@ class CameraService {
     // Placeholder: return original path for now
     return imagePath;
   }
+
+  // Missing methods for chat functionality
+  static Future<String?> captureAndUploadImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 85,
+      );
+      if (image != null) {
+        // In a real implementation, this would upload to Firebase Storage
+        // For now, return the local path as a placeholder
+        return image.path;
+      }
+      return null;
+    } catch (e) {
+      print('Error capturing image: $e');
+      return null;
+    }
+  }
+
+  static Future<String?> pickAndUploadImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 85,
+      );
+      if (image != null) {
+        // In a real implementation, this would upload to Firebase Storage
+        // For now, return the local path as a placeholder
+        return image.path;
+      }
+      return null;
+    } catch (e) {
+      print('Error picking image: $e');
+      return null;
+    }
+  }
 }

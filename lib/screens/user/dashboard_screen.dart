@@ -758,7 +758,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> with WidgetsB
               ),
             ],
           ),
-          if (footer != null) ..[
+          if (footer != null) ...[
             const SizedBox(height: 8),
             footer,
           ],

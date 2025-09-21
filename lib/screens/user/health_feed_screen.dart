@@ -478,7 +478,7 @@ class _ContentDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header with image
-            if (content.imageUrl != null) ..[
+            if (content.imageUrl != null) ...[
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: AspectRatio(

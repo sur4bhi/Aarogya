@@ -289,7 +289,7 @@ class _UserChatScreenState extends State<UserChatScreen> {
               isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            if (!isMe) ..[
+            if (!isMe) ...[
               CircleAvatar(
                 radius: 12,
                 backgroundColor: Colors.grey[300],
@@ -341,7 +341,7 @@ class _UserChatScreenState extends State<UserChatScreen> {
                             color: isMe ? Colors.white70 : Colors.grey[600],
                           ),
                         ),
-                        if (message.isEdited) ..[
+                        if (message.isEdited) ...[
                           const SizedBox(width: 4),
                           Text(
                             'edited',
@@ -352,7 +352,7 @@ class _UserChatScreenState extends State<UserChatScreen> {
                             ),
                           ),
                         ],
-                        if (isMe) ..[
+                        if (isMe) ...[
                           const SizedBox(width: 4),
                           Icon(
                             _getStatusIcon(message.status),
@@ -422,7 +422,7 @@ class _UserChatScreenState extends State<UserChatScreen> {
                   ),
                 ),
               ),
-            if (message.content.isNotEmpty) ..[
+            if (message.content.isNotEmpty) ...[
               const SizedBox(height: 8),
               Text(
                 message.content,
@@ -820,7 +820,7 @@ class _UserChatScreenState extends State<UserChatScreen> {
                 _showComingSoonSnackBar('Copy message');
               },
             ),
-            if (isMe && message.type == MessageType.text) ..[
+            if (isMe && message.type == MessageType.text) ...[
               ListTile(
                 leading: const Icon(Icons.edit),
                 title: const Text('Edit'),

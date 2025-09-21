@@ -368,7 +368,7 @@ class _ModernPatientCard extends StatelessWidget {
                         color: Color(0xFF1E293B),
                       ),
                     ),
-                    if (age != null) ..[
+                    if (age != null) ...[
                       const SizedBox(height: 4),
                       Text(
                         'Age: $age',
