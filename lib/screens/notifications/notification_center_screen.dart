@@ -44,12 +44,12 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
     return Consumer<SmartNotificationSystem>(
       builder: (context, notificationSystem, child) {
         return Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: const Color(0xFFF8FAFC),
           body: NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) {
               return [
-                _buildSliverAppBar(notificationSystem),
-                _buildSliverTabs(),
+                _buildModernSliverAppBar(notificationSystem),
+                _buildModernSliverTabs(),
               ];
             },
             body: TabBarView(
@@ -64,6 +64,249 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
           floatingActionButton: _buildFloatingActionButton(notificationSystem),
         );
       },
+    );
+  }
+
+  Widget _buildModernSliverAppBar(SmartNotificationSystem notificationSystem) {
+    return SliverAppBar(
+      expandedHeight: 180,
+      floating: false,
+      pinned: true,
+      backgroundColor: Colors.transparent,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF3B82F6),
+                Color(0xFF1D4ED8),
+                Color(0xFF1E40AF),
+              ],
+            ),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const Text(
+                    'Notification Center',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.notifications_active,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              '${notificationSystem.totalAlerts} Active',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      if (notificationSystem.hasEmergency)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFDC2626).withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.emergency,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                '${notificationSystem.emergencyAlerts.length} Emergency',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      const Spacer(),
+                      _buildModernQuickStats(notificationSystem),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      actions: [
+        if (_isSelectionMode) ...[
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.select_all, color: Colors.white),
+              onPressed: _selectAll,
+              tooltip: 'Select All',
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.clear, color: Colors.white),
+              onPressed: _clearSelection,
+              tooltip: 'Clear Selection',
+            ),
+          ),
+        ] else ...[
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.search, color: Colors.white),
+              onPressed: _showSearchDialog,
+              tooltip: 'Search',
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.filter_list, color: Colors.white),
+              onPressed: _showFilterDialog,
+              tooltip: 'Filter',
+            ),
+          ),
+        ],
+        Container(
+          margin: const EdgeInsets.only(right: 16),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert, color: Colors.white),
+            onSelected: (value) => _handleMenuAction(value, notificationSystem),
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'mark_all_read',
+                child: ListTile(
+                  leading: Icon(Icons.mark_email_read, size: 18),
+                  title: Text('Mark All as Read'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'bulk_actions',
+                child: ListTile(
+                  leading: Icon(Icons.checklist, size: 18),
+                  title: Text('Bulk Actions'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'settings',
+                child: ListTile(
+                  leading: Icon(Icons.settings, size: 18),
+                  title: Text('Alert Settings'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildModernQuickStats(SmartNotificationSystem notificationSystem) {
+    return Row(
+      children: [
+        _buildModernStatChip(
+          '${notificationSystem.criticalAlerts.length}',
+          'Critical',
+          const Color(0xFFDC2626),
+        ),
+        const SizedBox(width: 8),
+        _buildModernStatChip(
+          '${notificationSystem.unreadAlerts}',
+          'Unread',
+          const Color(0xFFF59E0B),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildModernStatChip(String value, String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.5)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.9),
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -242,6 +485,70 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildModernSliverTabs() {
+    return SliverPersistentHeader(
+      delegate: _ModernSliverTabBarDelegate(
+        TabBar(
+          controller: _tabController,
+          labelColor: const Color(0xFF3B82F6),
+          unselectedLabelColor: const Color(0xFF64748B),
+          indicatorColor: const Color(0xFF3B82F6),
+          indicatorWeight: 3,
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
+          tabs: [
+            Tab(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.notifications_active, size: 18),
+                    SizedBox(width: 8),
+                    Text('Active'),
+                  ],
+                ),
+              ),
+            ),
+            Tab(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.emergency, size: 18),
+                    SizedBox(width: 8),
+                    Text('Emergency'),
+                  ],
+                ),
+              ),
+            ),
+            Tab(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.history, size: 18),
+                    SizedBox(width: 8),
+                    Text('History'),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      pinned: true,
     );
   }
 
@@ -838,6 +1145,39 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
         return 'पैटर्न चिंता';
     }
   }
+}
+
+// Modern custom delegate for sticky tab bar
+class _ModernSliverTabBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar tabBar;
+
+  _ModernSliverTabBarDelegate(this.tabBar);
+
+  @override
+  double get minExtent => tabBar.preferredSize.height;
+
+  @override
+  double get maxExtent => tabBar.preferredSize.height;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xFFF8FAFC),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => false;
 }
 
 // Custom delegate for sticky tab bar

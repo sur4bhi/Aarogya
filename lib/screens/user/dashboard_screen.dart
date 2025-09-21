@@ -40,11 +40,41 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> with WidgetsB
   }
 
   Widget _sosFab(BuildContext context) {
-    return FloatingActionButton.extended(
-      onPressed: () => _triggerSos(context),
-      backgroundColor: Colors.red,
-      icon: const Icon(Icons.warning_amber_rounded, color: Colors.white),
-      label: const Text('SOS', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFDC2626),
+            Color(0xFFEF4444),
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFDC2626).withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: FloatingActionButton.extended(
+        onPressed: () => _triggerSos(context),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        icon: const Icon(
+          Icons.warning_amber_rounded,
+          color: Colors.white,
+          size: 24,
+        ),
+        label: const Text(
+          'SOS',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+      ),
     );
   }
 
@@ -217,38 +247,83 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> with WidgetsB
     final greeting = l10n.hello;
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: Text('$greeting, User'), // TODO: Use user name & l10n
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF6366F1),
+                Color(0xFF8B5CF6),
+                Color(0xFFEC4899),
+              ],
+            ),
+          ),
+        ),
+        title: Text(
+          '$greeting, User',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         actions: [
-          IconButton(
-            tooltip: l10n.language,
-            icon: const Icon(Icons.translate),
-            onPressed: () => _openLanguageSelector(context),
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              tooltip: l10n.language,
+              icon: const Icon(Icons.translate, color: Colors.white),
+              onPressed: () => _openLanguageSelector(context),
+            ),
           ),
-          IconButton(
-            tooltip: 'Sync now',
-            icon: const Icon(Icons.sync),
-            onPressed: () async {
-              try {
-                await context.read<VitalsProvider>().forceSync();
-                if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.syncedSuccessfully)),
-                );
-              } catch (e) {
-                if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${l10n.syncFailed}: $e')),
-                );
-              }
-            },
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              tooltip: 'Sync now',
+              icon: const Icon(Icons.sync, color: Colors.white),
+              onPressed: () async {
+                try {
+                  await context.read<VitalsProvider>().forceSync();
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.syncedSuccessfully)),
+                  );
+                } catch (e) {
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${l10n.syncFailed}: $e')),
+                  );
+                }
+              },
+            ),
           ),
-          IconButton(
-            tooltip: 'Profile',
-            onPressed: () => AppRoutes.navigateToUserProfile(context),
-            icon: const CircleAvatar(
-              radius: 14,
-              child: Icon(Icons.person, size: 18),
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              tooltip: 'Profile',
+              onPressed: () => AppRoutes.navigateToUserProfile(context),
+              icon: const CircleAvatar(
+                radius: 14,
+                backgroundColor: Colors.white,
+                child: Icon(Icons.person, size: 18, color: Color(0xFF6366F1)),
+              ),
             ),
           ),
         ],
@@ -284,75 +359,140 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> with WidgetsB
   }
 
   Widget _quickActions(BuildContext context) {
-    return Wrap(
-      spacing: 16,
-      runSpacing: 12,
-      children: [
-        _quickAction(
-          context,
-          icon: Icons.monitor_heart,
-          label: AppLocalizations.of(context)!.addVitals,
-          onTap: () => AppRoutes.navigateToVitalsInput(context),
-        ),
-        _quickAction(
-          context,
-          icon: Icons.upload_file,
-          label: AppLocalizations.of(context)!.uploadReport,
-          onTap: () => AppRoutes.navigateToReportsUpload(context),
-        ),
-        _quickAction(
-          context,
-          icon: Icons.group_add,
-          label: AppLocalizations.of(context)!.connectAsha,
-          onTap: () => AppRoutes.navigateToAshaConnect(context),
-        ),
-        _quickAction(
-          context,
-          icon: Icons.access_alarm,
-          label: AppLocalizations.of(context)!.reminders,
-          onTap: () => AppRoutes.navigateToReminders(context),
-        ),
-        _quickAction(
-          context,
-          icon: Icons.monitor_heart,
-          label: AppLocalizations.of(context)!.heartRate,
-          onTap: () => AppRoutes.navigateToMeasureHeartRate(context),
-        ),
-        _quickAction(
-          context,
-          icon: Icons.sos,
-          label: 'Emergency',
-          onTap: () => AppRoutes.navigateToEmergencyHub(context),
-        ),
-        _quickAction(
-          context,
-          icon: Icons.psychology_alt_outlined,
-          label: 'AI Coach',
-          onTap: () => AppRoutes.navigateToAiCoach(context),
-        ),
-        _quickAction(
-          context,
-          icon: Icons.account_balance_outlined,
-          label: 'Govt Services',
-          onTap: () => AppRoutes.navigateToGovernmentServices(context),
-        ),
-      ],
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Quick Actions',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1E293B),
+            ),
+          ),
+          const SizedBox(height: 16),
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 4,
+            childAspectRatio: 0.85,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 12,
+            children: [
+              _quickAction(
+                context,
+                icon: Icons.monitor_heart,
+                label: AppLocalizations.of(context)!.addVitals,
+                color: const Color(0xFF10B981),
+                onTap: () => AppRoutes.navigateToVitalsInput(context),
+              ),
+              _quickAction(
+                context,
+                icon: Icons.upload_file,
+                label: AppLocalizations.of(context)!.uploadReport,
+                color: const Color(0xFF3B82F6),
+                onTap: () => AppRoutes.navigateToReportsUpload(context),
+              ),
+              _quickAction(
+                context,
+                icon: Icons.group_add,
+                label: AppLocalizations.of(context)!.connectAsha,
+                color: const Color(0xFF8B5CF6),
+                onTap: () => AppRoutes.navigateToAshaConnect(context),
+              ),
+              _quickAction(
+                context,
+                icon: Icons.access_alarm,
+                label: AppLocalizations.of(context)!.reminders,
+                color: const Color(0xFFF59E0B),
+                onTap: () => AppRoutes.navigateToReminders(context),
+              ),
+              _quickAction(
+                context,
+                icon: Icons.favorite,
+                label: AppLocalizations.of(context)!.heartRate,
+                color: const Color(0xFFEF4444),
+                onTap: () => AppRoutes.navigateToMeasureHeartRate(context),
+              ),
+              _quickAction(
+                context,
+                icon: Icons.warning_amber_rounded,
+                label: 'Emergency',
+                color: const Color(0xFFDC2626),
+                onTap: () => AppRoutes.navigateToEmergencyHub(context),
+              ),
+              _quickAction(
+                context,
+                icon: Icons.psychology_alt_outlined,
+                label: 'AI Coach',
+                color: const Color(0xFF6366F1),
+                onTap: () => AppRoutes.navigateToAiCoach(context),
+              ),
+              _quickAction(
+                context,
+                icon: Icons.account_balance_outlined,
+                label: 'Govt Services',
+                color: const Color(0xFF059669),
+                onTap: () => AppRoutes.navigateToGovernmentServices(context),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
   Widget _quickAction(BuildContext context,
-      {required IconData icon, required String label, required VoidCallback onTap}) {
+      {required IconData icon, required String label, required Color color, required VoidCallback onTap}) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(
+            color: color.withOpacity(0.1),
+            width: 1.5,
+          ),
+        ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircleAvatar(radius: 22, child: Icon(icon)),
-            const SizedBox(height: 6),
-            Text(label, style: const TextStyle(fontSize: 12)),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: color,
+                size: 24,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF475569),
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
           ],
         ),
       ),
@@ -440,81 +580,320 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> with WidgetsB
           hrValue = latestHr.heartRate!.toStringAsFixed(0);
         }
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(AppLocalizations.of(context)!.latestVitals, style: AppTextStyles.headline3),
-                TextButton(
-                  onPressed: () => AppRoutes.navigateToVitalsTrends(context),
-                  child: Text(AppLocalizations.of(context)!.seeTrends),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: VitalsCard(title: AppLocalizations.of(context)!.bloodPressure, value: bpValue, unit: 'mmHg'),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: VitalsCard(title: AppLocalizations.of(context)!.bloodSugar, value: glucoseValue, unit: 'mg/dL'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: VitalsCard(title: AppLocalizations.of(context)!.weight, value: weightValue, unit: 'kg'),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: VitalsCard(
-                    title: AppLocalizations.of(context)!.heartRate,
-                    value: hrValue,
-                    unit: 'bpm',
-                    footer: _HeartRateSparkline(values: history
-                        .where((v) => v.type == VitalType.heartRate && v.heartRate != null)
-                        .take(20)
-                        .map((v) => v.heartRate!)
-                        .toList()),
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.latestVitals,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1E293B),
+                    ),
                   ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6366F1).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: TextButton(
+                      onPressed: () => AppRoutes.navigateToVitalsTrends(context),
+                      child: Text(
+                        AppLocalizations.of(context)!.seeTrends,
+                        style: const TextStyle(
+                          color: Color(0xFF6366F1),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _modernVitalsCard(
+                            title: AppLocalizations.of(context)!.bloodPressure,
+                            value: bpValue,
+                            unit: 'mmHg',
+                            icon: Icons.favorite,
+                            color: const Color(0xFFEF4444),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _modernVitalsCard(
+                            title: AppLocalizations.of(context)!.bloodSugar,
+                            value: glucoseValue,
+                            unit: 'mg/dL',
+                            icon: Icons.water_drop,
+                            color: const Color(0xFF3B82F6),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _modernVitalsCard(
+                            title: AppLocalizations.of(context)!.weight,
+                            value: weightValue,
+                            unit: 'kg',
+                            icon: Icons.monitor_weight,
+                            color: const Color(0xFF10B981),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _modernVitalsCard(
+                            title: AppLocalizations.of(context)!.heartRate,
+                            value: hrValue,
+                            unit: 'bpm',
+                            icon: Icons.favorite,
+                            color: const Color(0xFFEC4899),
+                            footer: _HeartRateSparkline(values: history
+                                .where((v) => v.type == VitalType.heartRate && v.heartRate != null)
+                                .take(20)
+                                .map((v) => v.heartRate!)
+                                .toList()),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
   }
 
-  Widget _healthFeedPreview(BuildContext context) {
-    // TODO: Load recommended items from a content provider/service
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(AppLocalizations.of(context)!.healthFeed, style: AppTextStyles.headline3),
-            TextButton(
-              onPressed: () => AppRoutes.navigateToHealthFeed(context),
-              child: Text(AppLocalizations.of(context)!.seeAll),
-            ),
+  Widget _modernVitalsCard({
+    required String title,
+    required String value,
+    required String unit,
+    required IconData icon,
+    required Color color,
+    Widget? footer,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withOpacity(0.1),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                icon,
+                color: color,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[600],
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                unit,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[500],
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
+          if (footer != null) ..[
+            const SizedBox(height: 8),
+            footer,
           ],
+        ],
+      ),
+    );
+  }
+
+  Widget _healthFeedPreview(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                AppLocalizations.of(context)!.healthFeed,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1E293B),
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6366F1).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: TextButton(
+                  onPressed: () => AppRoutes.navigateToHealthFeed(context),
+                  child: Text(
+                    AppLocalizations.of(context)!.seeAll,
+                    style: const TextStyle(
+                      color: Color(0xFF6366F1),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _modernHealthArticleCard(
+            title: '5 Tips for a Healthy Heart',
+            summary: 'Simple lifestyle habits can significantly improve your heart health.',
+            icon: Icons.favorite,
+            color: const Color(0xFFEF4444),
+          ),
+          const SizedBox(height: 12),
+          _modernHealthArticleCard(
+            title: 'Understanding Blood Pressure',
+            summary: 'Know your numbers and why they matter for your overall health.',
+            icon: Icons.monitor_heart,
+            color: const Color(0xFF3B82F6),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _modernHealthArticleCard({
+    required String title,
+    required String summary,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+        border: Border.all(
+          color: color.withOpacity(0.1),
+          width: 1,
         ),
-        const HealthArticleCard(
-          title: '5 tips for healthy heart',
-          summary: 'Simple lifestyle habits can significantly improve your heart health.',
-        ),
-        const HealthArticleCard(
-          title: 'Understanding blood pressure',
-          summary: 'Know your numbers and why they matter.',
-        ),
-      ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              icon,
+              color: color,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF1E293B),
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  summary,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                    height: 1.3,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: Colors.grey[400],
+          ),
+        ],
+      ),
     );
   }
 
